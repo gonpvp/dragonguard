@@ -1,0 +1,213 @@
+#.______   ____    ____      _______   ______   .__   __. .______   ____    ____ .______   
+#|   _  \  \   \  /   /     /  _____| /  __  \  |  \ |  | |   _  \  \   \  /   / |   _  \  
+#|  |_)  |  \   \/   /     |  |  __  |  |  |  | |   \|  | |  |_)  |  \   \/   /  |  |_)  | 
+#|   _  <    \_    _/      |  | |_ | |  |  |  | |  . `  | |   ___/    \      /   |   ___/  
+#|  |_)  |     |  |        |  |__| | |  `--'  | |  |\   | |  |         \    /    |  |      
+#|______/      |__|         \______|  \______/  |__| \__| | _|          \__/     | _|          
+
+# 1.0.1 Version
+# DISCORD SUPPORT: https://discord.gg/EdUGWw7
+
+# Do not sell the skript PLS
+
+on load:
+	load yaml "plugins/DragonGuard/config.yml" as "dragonguardconfig"
+	load yaml "plugins/DragonGuard/message.yml" as "dragonguardmessage"
+	load yaml "plugins/DragonGuard/database.yml" as "dragonguarddatabase"
+
+	set {_l::*} to "TD","BE" and "VN"
+	set yaml value "enable-blacklist" from "dragonguardconfig" to false if yaml node "enable-blacklist" from "dragonguardconfig" doesn't have value
+	set comment of yaml node "blacklist-country" from "dragonguardconfig" to "Players who connect to a certain country will be kicked (very useful during attack bots)." and "Countries must be written in ISO_3166-1_alpha-2 format! https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+	set yaml list "blacklist-country" from "dragonguardconfig" to {_l::*} if yaml node "blacklist-country" from "dragonguardconfig" doesn't have value
+	set yaml value "blacklist-country" from "dragonguardmessage" to "Your country is blacklisted by the server!" if yaml node "blacklist-country" from "dragonguardmessage" doesn't have value
+
+	set {_l::*} to "UN","BE" and "FR"
+	set yaml value "enable-whitelist" from "dragonguardconfig" to false if yaml node "enable-whitelist" from "dragonguardconfig" doesn't have value
+	set comment of yaml node "blacklist-country" from "dragonguardconfig" to "Allows only certain countries to have access to the Minecraft server, to use it only if you know about large bots attacks" and "Countries must be written in ISO_3166-1_alpha-2 format! https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"
+	set yaml list "whitelist-country" from "dragonguardconfig" to {_l::*} if yaml node "whitelist-country" from "dragonguardconfig" doesn't have value
+	set yaml value "whitelist-country" from "dragonguardmessage" to "Your country is not in the list of countries that can access the server." if yaml node "whitelist-country" from "dragonguardmessage" doesn't have value
+
+	set yaml value "antiuuid-spoofing" from "dragonguardconfig" to false if yaml node "antiuuid-spoofing" from "dragonguardconfig" doesn't have value
+	set comment of yaml node "antiuuid-spoofing" from "dragonguardconfig" to "USE IT ONLY IF YOUR SERVER IS CRACKED!"
+	set yaml value "antiuuid-spoofing" from "dragonguardmessage" to "There is an anti spoof uuid :p" if yaml node "antiuuid-spoofing" from "dragonguardmessage" doesn't have value
+
+	set yaml value "kick-for-hack-characters" from "dragonguardconfig" to false if yaml node "kick-for-hack-characters" from  "dragonguardconfig" doesn't have value
+	set yaml value "kick-for-hack-characters" from "dragonguardmessage" to "Contains invalide characters" if yaml node "kick-for-hack-characters" from "dragonguardmessage" doesn't have value
+
+	set yaml value "blocking-command-op-message" from "dragonguardconfig" to false if yaml node "blocking-command-op-message" from  "dragonguardconfig" doesn't have value
+	set yaml value "blocking-command-op-message" from "dragonguardmessage" to "You don't have permission!" if yaml node "blocking-command-op-message" from "dragonguardmessage" doesn't have value
+
+	set yaml value "blocking-command-console" from "dragonguardconfig" to false if yaml node "blocking-command-op-message" from  "dragonguardconfig" doesn't have value
+	set comment of yaml node "blocking-command-console" from "dragonguardconfig" to "Allows to disable all commands from the console, it is not very useful but I put it in case or for those who want to use it: p"
+
+	save yaml "dragonguardconfig"
+	save yaml "dragonguardmessage"
+	save yaml "dragonguarddatabase"
+
+function checknewver(p: player,n: number):
+	{_p} has permission "dragonguard.command"
+	set {_new} to content from url "https://pastebin.com/raw/z1gHqp0b"
+	set {_ver} to content from url "https://pastebin.com/raw/Eba2XrVY"
+	if {_ver} contains "1.0.2":
+		{_n} is 1
+		send "&c&lDragon&bGuard &8&l➔ &7You already have the latest version!" to {_p}
+	else:
+		send "&7&m-------&r" to {_p}
+		send " " to {_p}
+		send formatted "&c&lDragon&bGuard &8&l➔ &7The new version is avalaible !%nl%&7Use &c&n/dragonguard download&r &7!" to {_p}
+		send " " to {_p}
+		send "&c&l➔ &7In the new version there are ! %nl% &f%{_new}%" to {_p}
+		send " " to {_p}
+		send "&7&m-------&r" to {_p}
+		stop
+
+function dragonguardhelp(p: player,n: number):
+	if {_n} is 1:
+		send "&7&m-------&r &c&lDragon&bGuard &7&m-------&r" to {_p}
+		send " " to {_p}
+		send " &8&l➔ &e/dragonguard checkupdate" to {_p}
+		send " &7Check the new update available" to {_p}
+		send " &8&l➔ &e/dragonguard reload [config/message/all]" to {_p}
+		send " &7Reload the Config" to {_p}
+		send " &8&l➔ &e/dragonguard support" to {_p}
+		send " &7Discord Support Link" to {_p}
+		send " " to {_p}
+		send "<run command:/dragonguard help 2>&8[&6Page 2&8]<reset>" to {_p}
+		send " " to {_p}
+		send "&7&m-------&r &c&lDragon&bGuard &7&m-------&r" to {_p}
+		stop
+	if {_n} is 2:
+		send "&7&m-------&r &c&lDragon&bGuard &7&m-------&r" to {_p}
+		send " " to {_p}
+		send " &8&l➔ &e/dragonguard download" to {_p}
+		send " &7Download the last version" to {_p}
+		send " &8&l➔ &e/dragonguard ip-country [player/ip] player" to {_p}
+		send " &7Checked the country of player" to {_p}
+		send " " to {_p}
+		send "<run command:/dragonguard help 1>&8[&6Page 1&8]<reset>" to {_p}
+		send " " to {_p}
+		send "&7&m-------&r &c&lDragon&bGuard &7&m-------&r" to {_p}
+		stop
+
+command dragonguard [<text>] [<text>] [<text>]:
+	aliases: dg,dragonguards,dragonsguard
+	permission: dragonguard.command
+	permission message: &c&lDragon&bGuard &8&l➔ &7You do not have permission to use the commands
+	trigger:
+		if arg 1 is "help":
+			if arg 2 is "1":
+				dragonguardhelp(player, 1)
+			if arg 2 is "2":
+				dragonguardhelp(player, 2)	
+			stop
+		if arg 1 is "checkupdate":
+			checknewver(player, 0)
+			stop
+		if arg 1 is "support" or "discord":
+			checknewver(player, 0)
+			send formatted "&c&lDragon&bGuard &8&l➔ &7 &b&nDiscord Support https://discord.gg/EdUGWw7"
+		if arg 1 is "download":
+			if player has permission "dragonguard.reload":
+				set {_ver} to content from url "https://pastebin.com/raw/Eba2XrVY"
+				send "&c&lDragon&bGuard &8&l➔ &7Downloading the file ..."
+				download from url "https://raw.githubusercontent.com/gonpvp/dragonguard/latest/test.rtf" to file path "plugins/Skript/scripts/dragonguard.sk":
+					send "&c&lDragon&bGuard &8&l➔ &7Download %{_ver}% version the finished ! The skript will reload now even when you read this message, it may be that there are some big lags"
+					reload script name of script
+					send "&c&lDragon&bGuard &8&l➔ &7Reload the finished !"
+					stop
+			else:
+				send "&c&lDragon&bGuard &8&l➔ &7You do not have permission to use the commands"
+		if arg 1 is "ip-country":
+			if arg 2 is "player":
+				set {_} to content from url "http://ip-api.com/json/%ip of player%?fields=countryCode" 
+			if arg 2 is "ip":
+				set {_} to content from url "http://ip-api.com/json/%arg 3%?fields=countryCode"  	   
+			set {_} to subtext of {_} from characters 17 to 18
+			send "&c&lDragon&bGuard &8&l➔ &7Contry Name is %{_}%"
+		if arg 1 is "reload":
+			checknewver(player, 1)
+			if player has permission "dragonguard.reload":
+				if arg 2 is "config":				
+					save yaml "dragonguardconfig"
+					send "&c&lDragon&bGuard &8&l➔ &7The configuration has just been successfully reloaded!"
+					stop
+				if arg 2 is "message":				
+					save yaml "dragonguardmessage"
+					send "&c&lDragon&bGuard &8&l➔ &7The message configuration has just been successfully reloaded!"	
+					stop
+				if arg 2 is "all":				
+					save yaml "dragonguardconfig"
+					save yaml "dragonguardmessage"
+					send "&c&lDragon&bGuard &8&l➔ &7The all configuration has just been successfully reloaded!"	
+					stop	
+			else:
+				send "&c&lDragon&bGuard &8&l➔ &7You do not have permission to use the commands"
+				stop
+		if else:
+			dragonguardhelp(player, 0)
+			stop
+
+
+on command:
+	yaml value "blocking-command-console" from "dragonguardconfig" is true
+	if executor is CONSOLE:
+		cancel event
+	stop
+
+function checkip(p: player,n: number):
+	set {_} to content from url "http://ip-api.com/json/%ip of {_p}%?fields=countryCode"    
+	set {_} to subtext of {_} from characters 17 to 18
+	if {_n} is 0:
+		loop yaml list "blacklist-country" from "dragonguardconfig":
+			{_} is loop-value
+			kick {_p} due to "%yaml value ""blacklist-country"" from ""dragonguardmessage""%"
+			send "&c&lDragon&bGuard &8&l➔ &8%{_p}% &7has been kicked for country blacklist &8(&7Country: &b%{_n}%&8)" to ops
+	if {_n} is 1:		
+		loop yaml list "whitelistlist-country" from "dragonguardconfig":
+			{_} is not loop-value
+			kick {_p} due to "%yaml value ""whitelistlist-country"" from ""dragonguardmessage""%"
+			send "&c&lDragon&bGuard &8&l➔ &8%{_p}% &7has been kicked for country whitelist &8(&7Country: &b%{_n}%&8)" to ops
+
+function checkchara(p: player):
+	set {_1} to {_p}
+	set {_t::*} to "&","!" , "##" ,"?" and "§"
+	replace all {_t::*} with "" in {_1}
+	{_1} != {_p}
+	kick {_p} due to "%yaml value ""kick-for-hack-characters"" from ""dragonguardmessage""%"
+	send "&c&lDragon&bGuard &8&l➔ &8%{_p}% &7has been kicked for invalide characters &8(&7NickName: &b%{_1}%&8)" to ops
+	stop
+
+function spoofuuid(p: player):
+	set yaml value name of {_p} from "dragonguarddatabase" to uuid of {_p} if yaml node name of {_p} from "dragonguarddatabase" doesn't have value
+	save yaml "dragonguarddatabase"
+	kick {_p} due to "%yaml value ""antiuuid-spoofing"" from ""dragonguardmessage""%" if yaml value name of {_p} from "dragonguarddatabase" is not uuid of {_p}
+	send "&c&lDragon&bGuard &8&l➔ &8%{_p}% &7has been kicked for uuid spoofing" to ops
+	stop
+
+on connect:
+	if yaml value "antiuuid-spoofing" from "dragonguardconfig" is true:
+		spoofuuid(player)
+	if yaml value "enable-blacklist" from "dragonguardconfig" is true:
+		checkip(player, 0)
+		stop
+	if yaml value "enable-whitelist" from "dragonguardconfig" is true:
+		checkip(player, 1)	
+		stop
+	if yaml value "kick-for-hack-characters" from "dragonguardconfig" is true:
+		checkchara(player)
+	stop
+
+command /op [<player>]:
+	aliases: minecraft:op
+	permission: op
+	trigger:
+		if yaml value "blocking-command-op" from "dragonguardconfig" is true:
+			send "%yaml value ""blocking-command-op-message"" from ""dragonguardmessage""%"
+			stop
+		else:
+			op arg 1
+			stop
+
+on script load:
+	checknewver(ops,1)
+	send "&c&lDragon&bGuard &8&l➔ &7Loading of the finished skript!" to ops
